@@ -89,3 +89,11 @@ assets {
     minifyJs = true
     minifyCss = true
 }
+
+sourceSets {
+    main {
+        resources {
+            srcDir 'grails-app/migrations'
+        }
+    }
+}
