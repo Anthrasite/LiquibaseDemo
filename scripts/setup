@@ -1,0 +1,51 @@
+#!/bin/bash
+# This script will run all the necessary commands to set-up your development environment
+# Run "chmod u+x setup" to get an executable for the script
+# Run "./setup" to run the script after executable is made
+
+BLUE="\033[0;34m"
+RESET="\033[0m"
+
+echo -e "${BLUE}-----------------------------------------------------"
+echo "Updating Package Lists"
+echo -e "-----------------------------------------------------${RESET}"
+
+sudo apt-get update
+sudo apt-get -y upgrade
+
+echo -e "${BLUE}-----------------------------------------------------"
+echo "Install Java (1.8.0_162)"
+echo -e "-----------------------------------------------------${RESET}"
+
+sudo mkdir -p /usr/lib/jvm
+wget --continue --no-check-certificate --header "Cookie: oraclelicense=a" 'http://download.oracle.com/otn-pub/java/jdk/8u162-b12/0da788060d494f5095bf8624735fa2f1/jdk-8u162-linux-x64.tar.gz'
+tar -xf jdk-8u162-linux-x64.tar.gz
+sudo mv jdk1.8* /usr/lib/jvm/java-8-oracle
+sudo update-alternatives --install /usr/bin/java java /usr/lib/jvm/java-8-oracle/jre/bin/java 1091
+sudo update-alternatives --install /usr/bin/javac javac /usr/lib/jvm/java-8-oracle/bin/javac 1091
+sudo printf '%s\n' 'export J2SDKDIR=/usr/lib/jvm/java-8-oracle' 'export J2REDIR=/usr/lib/jvm/java-8-oracle/jre' 'export PATH=$PATH:/usr/lib/jvm/java-8-oracle/bin:/usr/lib/jvm/java-8-oracle/db/bin:/usr/lib/jvm/java-8-oracle/jre/bin' 'export JAVA_HOME=/usr/lib/jvm/java-8-oracle' 'export DERBY_HOME=/usr/lib/jvm/java-8-oracle/db' | sudo tee /etc/profile.d/jdk.sh > /dev/null
+sudo -s source /etc/profile.d/jdk.sh
+java -version
+
+echo -e "${BLUE}-----------------------------------------------------"
+echo "Install Grails (3.3.2)"
+echo -e "-----------------------------------------------------${RESET}"
+
+sudo apt install curl
+curl -s get.sdkman.io | bash
+source "$HOME/.sdkman/bin/sdkman-init.sh"
+sdk install grails
+grails -version
+
+echo -e "${BLUE}-----------------------------------------------------"
+echo "Install MySQL (5.7.21)"
+echo -e "-----------------------------------------------------${RESET}"
+
+sudo apt-get install mysql-server
+
+echo -e "${BLUE}-----------------------------------------------------"
+echo "Initialize MySQL Database"
+echo -e "-----------------------------------------------------${RESET}"
+
+mysqladmin -p -u root version
+mysql -p -u root < dbsetup.sql
