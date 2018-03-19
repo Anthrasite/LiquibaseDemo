@@ -15,4 +15,5 @@ databaseChangeLog = {
             }
         }
     }
+    include file: 'add_password.groovy'
 }
